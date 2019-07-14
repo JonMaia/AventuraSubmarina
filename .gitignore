@@ -1,7 +1,7 @@
 *.class
 *.log
 .idea/
-project/
+project/target/*
 target/
 *.xml
 *.iml
