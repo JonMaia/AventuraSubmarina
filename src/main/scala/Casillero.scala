@@ -1,3 +1,6 @@
-case class Casillero(profundidad: NivelDeProfundidad, reliquia: Int)
+class Casillero
 
-case class CasilleroTomado()
+case class CasilleroConReliquia(profundidad: NivelDeProfundidad, reliquia: Int) extends Casillero{
+
+}
+case class CasilleroTomado() extends Casillero

@@ -1,11 +1,17 @@
 import org.scalatest.{FunSpec, Matchers}
+import scala.util.Random
 
 class RandomsSpec extends  FunSpec with Matchers {
   describe("Randoms") {
+
+    Random.setSeed(1)
+
     it("lanzarDadoControlable") {
       Randoms.lanzarDado(5) shouldEqual 5
       Randoms.lanzarDado(3) shouldEqual 3
-      0 to 5 contains Randoms.lanzarDado() shouldBe true
+      Randoms.lanzarDado() shouldBe 3
+      Randoms.lanzarDado() shouldBe 4
+      Randoms.lanzarDado() shouldBe 1
     }
 
     it("nivelDeProfundidadControlable") {
@@ -21,19 +27,19 @@ class RandomsSpec extends  FunSpec with Matchers {
 
       for (i <- 0 to 31){
         if(i <= 7) {
-          tablero = tablero :+ Casillero(Baja, Randoms.valorDeReliquia(Baja))
+          tablero = tablero :+ CasilleroConReliquia(Baja, Randoms.valorDeReliquia(Baja))
         }
 
         if(i >= 8 && i <= 15) {
-          tablero = tablero :+ Casillero(Media, Randoms.valorDeReliquia(Media))
+          tablero = tablero :+ CasilleroConReliquia(Media, Randoms.valorDeReliquia(Media))
         }
 
         if(i >= 16 && i <= 23) {
-          tablero = tablero :+ Casillero(Alta, Randoms.valorDeReliquia(Alta))
+          tablero = tablero :+ CasilleroConReliquia(Alta, Randoms.valorDeReliquia(Alta))
         }
 
         if(i >= 24 && i <= 31) {
-          tablero = tablero :+ Casillero(Maxima, Randoms.valorDeReliquia(Maxima))
+          tablero = tablero :+ CasilleroConReliquia(Maxima, Randoms.valorDeReliquia(Maxima))
         }
       }
 
