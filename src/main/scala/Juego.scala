@@ -1,7 +1,6 @@
 class Juego() {
 
 
-
   var tablero = new Tablero()
   var casillerosPorJugadores: Map[Jugador,List[CasilleroConReliquia]] = Map()
   var nivelOxigeno: Integer = _
@@ -21,13 +20,13 @@ class Juego() {
   }
 
   def siguienteTurno():Integer = { // solo cuando cambia el turno
-    //(indexSiguienteJugador == casillerosPorJugadores.size -1) ? 0 | indexSiguienteJugador + 1
     if(indexSiguienteJugador == casillerosPorJugadores.size -1) 0 else indexSiguienteJugador + 1
   }
 
   def consumirOxigeno():Unit = {
 
     // TODO tener en cuenta que el oxigeno puede llegar a cero y perderian
+
     nivelOxigeno = nivelOxigeno - totalCasillerosJugador(jugadorActual())
   }
 
@@ -35,14 +34,12 @@ class Juego() {
   def jugadores():List[Jugador] = casillerosPorJugadores.keys.toList
   def jugadorActual(): Jugador = jugadores()(indexSiguienteJugador)
 
-  def totalCasillerosJugador(jugador: Jugador): Integer = casillerosPorJugadores.get(jugador).size
+  def totalCasillerosJugador(jugador: Jugador): Integer = casillerosPorJugadores.getOrElse(jugador,null).size
 
   def jugadorSeMueveA(direccion: Direccion):Unit = direccionJugadorActual = direccion
 
   def mover(unidadesAMover: Int,direccion: Direccion): Unit = {
-    if (unidadesAMover > 0 ){
-
-    }
+    tablero.moverJugador(jugadorActual(),unidadesAMover,direccion)
   }
 
   def nadar(direccion: Direccion): Unit = {
@@ -62,7 +59,7 @@ class Juego() {
 
     //TODO hacer pattern matching segun las acciones
 
-    var jugadorSeVaAMoverPara: Direccion = null
+    var jugadorSeVaAMoverPara: Direccion = Abajo
 
     acciones.foreach {
       case ConsumirOxigeno() => consumirOxigeno()
@@ -82,5 +79,11 @@ class Juego() {
   def actualizarSiguienteJugador():Unit = indexSiguienteJugador = siguienteTurno()
 
   def nivelDeOxigeno():Integer = nivelOxigeno
+
+  def posicionJugador(jugador: Jugador): Integer = {
+    tablero.obtenerPosicionJugador(jugador)
+  }
+
+
 
 }
