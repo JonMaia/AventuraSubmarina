@@ -9,7 +9,7 @@ case class Submarino() {
     jugadores = jugadores.filter(j=> j!= jugador)
   }
 
-  def tieneJugador(jugador: Jugador): Boolean = jugadores.contains(jugador)
+  def tieneJugador(jugador: Jugador): Boolean = jugadores.size > 0 && jugadores.contains(jugador)
 
 
 

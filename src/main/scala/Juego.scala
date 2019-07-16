@@ -13,10 +13,12 @@ class Juego() {
 
   def iniciar(jugadores:List[Jugador]): Unit = {
     jugadores.foreach(j => this.agregarJugador(j))
+    jugadores.foreach(j => tablero.colocarJugadorEnSubmarino(j))
   }
 
   def iniciarRonda(): Unit = {
     nivelOxigeno = 25
+
   }
 
   def siguienteTurno():Integer = { // solo cuando cambia el turno
@@ -43,10 +45,8 @@ class Juego() {
   }
 
   def nadar(direccion: Direccion): Unit = {
-
     // tiramos los dados se va a mover dados menos cantiadad de reliquias con <= 0 se queda donde esta
     var valorDado =  Randoms.lanzarDado()
-
     var unidadesAMover = valorDado - totalCasillerosJugador(jugadorActual())
 
     mover(unidadesAMover,direccion)

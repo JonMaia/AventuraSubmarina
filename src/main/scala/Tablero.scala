@@ -26,7 +26,7 @@ class Tablero() {
 
     direccion match{
       case Arriba => subir(jugador:Jugador,unidades:Integer)
-      case Arriba if estaCasilleroInicial(jugador) => subirAlSubmarino(jugador:Jugador,unidades:Integer)
+      case Arriba if estaCasilleroInicial(jugador) => subirAlSubmarino(jugador:Jugador)
       case Abajo if submarino.tieneJugador(jugador) => bajarDeSubmarino(jugador:Jugador,unidades:Integer)
       case Abajo => bajar(jugador:Jugador,unidades:Integer)
     }
@@ -51,7 +51,11 @@ class Tablero() {
   def posicionarJugadorEnCasillero(jugador: Jugador,casillero:Integer): Unit ={
     var nuevosCasilleros: List[(Casillero,Jugador,Integer)] = List()
 
-    casilleros.foreach( tup => if(tup._3 == casillero) nuevosCasilleros :+ (tup._1,jugador,tup._3))
+    casilleros.foreach(
+      tup =>  if(tup._3 == casillero)
+                nuevosCasilleros = nuevosCasilleros :+ (tup._1,jugador,tup._3)
+              else
+                nuevosCasilleros = nuevosCasilleros :+ tup)
     casilleros = nuevosCasilleros
   }
 
@@ -74,7 +78,7 @@ class Tablero() {
   }
 
   def bajar(jugador: Jugador, unidades: Integer): Unit ={
-    var posicionActual:Integer = obtenerPosicionJugador(jugador)
+    var posicionActual:Integer = if (submarino.tieneJugador(jugador))-1 else obtenerPosicionJugador(jugador)
     var desplazamiento:Integer = 0
 
     (0 to unidades).foreach( _ =>
@@ -84,18 +88,21 @@ class Tablero() {
     posicionarJugadorEnCasillero(jugador,posicionActual + desplazamiento)
   }
 
-  def jugadorSubioASubmarino(jugador: Jugador): Unit = {
-
+  def colocarJugadorEnSubmarino(jugador: Jugador): Unit = {
+    // Usar solo para iniciar la ronda
+    submarino.subirJugador(jugador)
   }
 
-  def subirAlSubmarino(jugador: Jugador, integer: Integer): Unit = {
+  def subirAlSubmarino(jugador: Jugador): Unit = {
+      sacarJugadorDeCasillero(jugador,obtenerPosicionJugador(jugador))
       submarino.subirJugador(jugador)
-      jugadorSubioASubmarino(jugador)
   }
 
   def bajarDeSubmarino(jugador:Jugador,unidades:Integer):Unit = {
-    submarino.bajarJugador(jugador)
-    posicionarJugadorEnCasillero(jugador,0)
+    if (unidades > 0 ){
+      bajar(jugador,unidades-1)
+      submarino.bajarJugador(jugador)
+    }
   }
 
   def estaCasilleroInicial(jugador: Jugador):Boolean = obtenerPosicionJugador(jugador) == 0
