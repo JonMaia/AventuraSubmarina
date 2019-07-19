@@ -1,14 +1,15 @@
+
 class Juego() {
 
 
   var tablero = new Tablero()
-  var casillerosPorJugadores: Map[Jugador,List[CasilleroConReliquia]] = Map()
-  var nivelOxigeno: Integer = _
-  var indexSiguienteJugador:Integer = 0
-  var direccionJugadorActual:Direccion = _
+  var ronda:Ronda = _
+  var numeroDeRonda = 1
+  var reliquiasPorJugador: Map[Jugador,Integer] = Map()
+
 
   def agregarJugador(jugador: Jugador): Unit = {
-    casillerosPorJugadores = casillerosPorJugadores.updated(jugador, List[CasilleroConReliquia]())
+    reliquiasPorJugador = reliquiasPorJugador.updated(jugador, 0)
   }
 
   def iniciar(jugadores:List[Jugador]): Unit = {
@@ -17,37 +18,24 @@ class Juego() {
   }
 
   def iniciarRonda(): Unit = {
-    nivelOxigeno = 25
-
+    if (numeroDeRonda == 4) throw new ExceptionFinDeJuego
+    ronda = new Ronda(this)
   }
 
-  def siguienteTurno():Integer = { // solo cuando cambia el turno
-    if(indexSiguienteJugador == casillerosPorJugadores.size -1) 0 else indexSiguienteJugador + 1
-  }
+  def consumirOxigeno():Unit = ronda.consumirOxigeno()
 
-  def consumirOxigeno():Unit = {
+  def jugadores():List[Jugador] = reliquiasPorJugador.keys.toList
 
-    // TODO tener en cuenta que el oxigeno puede llegar a cero y perderian
-
-    nivelOxigeno = nivelOxigeno - totalCasillerosJugador(jugadorActual())
-  }
-
-
-  def jugadores():List[Jugador] = casillerosPorJugadores.keys.toList
-  def jugadorActual(): Jugador = jugadores()(indexSiguienteJugador)
-
-  def totalCasillerosJugador(jugador: Jugador): Integer = casillerosPorJugadores.getOrElse(jugador,null).size
-
-  def jugadorSeMueveA(direccion: Direccion):Unit = direccionJugadorActual = direccion
+  //def jugadorSeMueveA(direccion: Direccion):Unit = direccionJugadorActual = direccion
 
   def mover(unidadesAMover: Int,direccion: Direccion): Unit = {
-    tablero.moverJugador(jugadorActual(),unidadesAMover,direccion)
+    tablero.moverJugador(ronda.jugadorActual(),unidadesAMover,direccion)
   }
 
   def nadar(direccion: Direccion): Unit = {
-    // tiramos los dados se va a mover dados menos cantiadad de reliquias con <= 0 se queda donde esta
     var valorDado =  Randoms.lanzarDado()
-    var unidadesAMover = valorDado - totalCasillerosJugador(jugadorActual())
+    //print("Valor del dado " + valorDado + "\n")
+    var unidadesAMover = valorDado - ronda.totalCasillerosJugador(ronda.jugadorActual())
 
     mover(unidadesAMover,direccion)
 
@@ -55,35 +43,79 @@ class Juego() {
 
   def iniciarTurno(acciones: List[Accion]):Unit= {
 
-    indexSiguienteJugador
-
-    //TODO hacer pattern matching segun las acciones
-
     var jugadorSeVaAMoverPara: Direccion = Abajo
 
-    acciones.foreach {
-      case ConsumirOxigeno() => consumirOxigeno()
-      case Subo() => jugadorSeVaAMoverPara = Arriba
-      case Bajo() => jugadorSeVaAMoverPara = Abajo
-      case Nadar() => nadar(jugadorSeVaAMoverPara)
-      //case RecongerReliquia() => recogerReliquia()
-      //case AbandonarReliquia() => abandonarReliquia()
-      //case NoHacerNada() => noHacerNada()
+    try {
+      acciones.foreach {
+        case ConsumirOxigeno() => ronda.consumirOxigeno()
+        case Subo() if ronda.hayOxigeno() => jugadorSeVaAMoverPara = Arriba
+        case Bajo() if ronda.hayOxigeno()=> jugadorSeVaAMoverPara = Abajo
+        case Nadar() if ronda.hayOxigeno() => nadar(jugadorSeVaAMoverPara)
+        case RecongerReliquia() => recogerReliquia()
+        //case AbandonarReliquia() => abandonarReliquia()
+        //case NoHacerNada() => noHacerNada()
+      }
+      ronda.actualizarSiguienteJugador()
+    }
+    catch {
+      case oxigeno: ExceptionFinDeOxigeno => seTerminoRondaPorFaltaDeOxigeno()
+      case abordaje: ExceptionSubieronTodos => seTerminoRondaSubieronTodos()
     }
 
-    actualizarSiguienteJugador()
   }
-
-
-
-  def actualizarSiguienteJugador():Unit = indexSiguienteJugador = siguienteTurno()
-
-  def nivelDeOxigeno():Integer = nivelOxigeno
 
   def posicionJugador(jugador: Jugador): Integer = {
     tablero.obtenerPosicionJugador(jugador)
   }
 
+  def nivelDeOxigeno(): Integer = ronda.nivelOxigeno
+  def vaciarOxigeno():Unit = {
+    ronda.vaciarOxigeno()
+    if (numeroDeRonda == 3) throw new ExceptionFinDeJuego
+  }
+  def jugadorActual():Jugador = ronda.jugadorActual()
+
+  def subirJugadoresASubmarino(jugadores: List[Jugador]):Unit = {
+    jugadores.foreach(j=> tablero.subirAlSubmarino(j))
+  }
+
+  def seTerminoRonda():Unit = {
+    numeroDeRonda += 1
+    iniciarRonda()
+    subirJugadoresASubmarino(jugadores())
+    tablero.reiniciar()
+  }
+
+  def seTerminoRondaPorFaltaDeOxigeno():Unit = {
+    contabilizarReliquiasPorJugador()
+    seTerminoRonda()
+  }
+
+  def contabilizarReliquiasPorJugador():Unit = {
+    ronda.totalReliquiasPorJugadores().foreach(
+      tup => reliquiasPorJugador.updated(tup._1,
+        reliquiasPorJugador.getOrElse(tup._1,null) + tup._2)
+    )
+  }
+
+  def seTerminoRondaSubieronTodos():Unit = {
+    contabilizarReliquiasPorJugador()
+    seTerminoRonda()
+  }
+
+  def recogerReliquia(): Unit = {
+    if (tablero.posicionJugadorTieneReliquia(jugadorActual())){
+      ronda.recongerReliquia(tablero)
+    }
+  }
+
+  def posicionJugadorActual():Integer = {
+    posicionJugador(jugadorActual())
+  }
+
+  def totalReliquiasJugador(jugador: Jugador):Integer = {
+    ronda.totalReliquiasJugador(jugador)
+  }
 
 
 }

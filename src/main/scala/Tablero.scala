@@ -25,8 +25,9 @@ class Tablero() {
   def moverJugador(jugador:Jugador, unidades:Integer, direccion: Direccion):Unit = {
 
     direccion match{
+      //case Arriba if estaCasilleroInicial(jugador) => subirAlSubmarino(jugador:Jugador)
       case Arriba => subir(jugador:Jugador,unidades:Integer)
-      case Arriba if estaCasilleroInicial(jugador) => subirAlSubmarino(jugador:Jugador)
+
       case Abajo if submarino.tieneJugador(jugador) => bajarDeSubmarino(jugador:Jugador,unidades:Integer)
       case Abajo => bajar(jugador:Jugador,unidades:Integer)
     }
@@ -44,7 +45,9 @@ class Tablero() {
   def sacarJugadorDeCasillero(jugador: Jugador,casillero: Integer): Unit = {
     var nuevosCasilleros: List[(Casillero,Jugador,Integer)] = List()
 
-    casilleros.foreach( tup => if(tup._2 == jugador) nuevosCasilleros :+ (tup._1,null,tup._3))
+    casilleros.foreach( tup => if(tup._2 == jugador) nuevosCasilleros = nuevosCasilleros :+ (tup._1,null,tup._3)
+                                else nuevosCasilleros = nuevosCasilleros :+ tup
+    )
     casilleros = nuevosCasilleros
   }
 
@@ -65,47 +68,104 @@ class Tablero() {
   }
 
 
-
   def subir(jugador: Jugador, unidades: Integer): Unit ={
     var posicionActual:Integer = obtenerPosicionJugador(jugador)
     var desplazamiento:Integer = 0
+    var nuevaPosicion: Integer = 0
 
-    (0 to unidades).foreach( _ =>
+    (0 to (unidades-1)).foreach( _ =>
       desplazamiento = desplazamiento + (if(hayOtroJugadorEnCasillero(posicionActual,jugador)) 2 else 1)
     )
+    sacarJugadorDeCasillero(jugador,posicionActual)
 
-    posicionarJugadorEnCasillero(jugador,posicionActual - desplazamiento)
+    if (posicionActual - desplazamiento < 0 )
+      subirAlSubmarino(jugador,esFinDeRonda = true)
+    else
+      posicionarJugadorEnCasillero(jugador,posicionActual - desplazamiento)
   }
 
   def bajar(jugador: Jugador, unidades: Integer): Unit ={
-    var posicionActual:Integer = if (submarino.tieneJugador(jugador))-1 else obtenerPosicionJugador(jugador)
+    var posicionActual:Integer = if (submarino.tieneJugador(jugador))0 else obtenerPosicionJugador(jugador)
     var desplazamiento:Integer = 0
 
-    (0 to unidades).foreach( _ =>
-      desplazamiento = desplazamiento + (if(hayOtroJugadorEnCasillero(posicionActual,jugador)) 2 else 1)
+    (0 to (unidades-1)).foreach( _ =>
+      desplazamiento = desplazamiento + (if(hayOtroJugadorEnCasillero(posicionActual+desplazamiento,jugador))2 else 1)
     )
-
+    sacarJugadorDeCasillero(jugador,posicionActual)
     posicionarJugadorEnCasillero(jugador,posicionActual + desplazamiento)
   }
 
-  def colocarJugadorEnSubmarino(jugador: Jugador): Unit = {
-    // Usar solo para iniciar la ronda
-    submarino.subirJugador(jugador)
+  def bajarDesdeElSubmarino(jugador: Jugador, unidades: Integer): Unit ={
+    var posicionActual:Integer = if (submarino.tieneJugador(jugador))0 else obtenerPosicionJugador(jugador)
+    var desplazamiento:Integer = 0
+
+    (0 to (unidades-1)).foreach( _ =>
+      desplazamiento = desplazamiento + (if(hayOtroJugadorEnCasillero(posicionActual+desplazamiento,jugador))2 else 1)
+    )
+    posicionarJugadorEnCasillero(jugador,posicionActual + desplazamiento)
   }
 
-  def subirAlSubmarino(jugador: Jugador): Unit = {
-      sacarJugadorDeCasillero(jugador,obtenerPosicionJugador(jugador))
+
+  def colocarJugadorEnSubmarino(jugador: Jugador): Unit = {
+    subirAlSubmarino(jugador)
+  }
+  def jugadores(): List[Jugador] = {
+    casilleros.filter(tup => tup._2 != null).map(tup => tup._2)
+  }
+
+  def subirAlSubmarino(jugador: Jugador,esFinDeRonda:Boolean = false): Unit = {
+      //sacarJugadorDeCasillero(jugador,obtenerPosicionJugador(jugador))
       submarino.subirJugador(jugador)
+      if (submarino.tieneJugadores(jugadores()) && esFinDeRonda)
+        throw new ExceptionSubieronTodos
+
   }
 
   def bajarDeSubmarino(jugador:Jugador,unidades:Integer):Unit = {
     if (unidades > 0 ){
-      bajar(jugador,unidades-1)
+      bajarDesdeElSubmarino(jugador,unidades-1)
       submarino.bajarJugador(jugador)
     }
   }
 
   def estaCasilleroInicial(jugador: Jugador):Boolean = obtenerPosicionJugador(jugador) == 0
+
+  def reiniciar(): Unit = {
+    casilleros = List()
+    crearCasilleros()
+  }
+
+  def hayReliquiaEnPosicion(posicion: Integer): Boolean = {
+    casilleros.exists(tup => tup._3 == posicion && tup._1.isInstanceOf[CasilleroConReliquia])
+  }
+
+  def posicionJugadorTieneReliquia(jugador: Jugador): Boolean = {
+    hayReliquiaEnPosicion(obtenerPosicionJugador(jugador))
+  }
+
+
+  def obtenerReliquiaEnPosicion(posicion:Integer): Casillero = {
+    casilleros.filter(tup => tup._3 == posicion).head._1
+  }
+
+  def colocarCasilleroEnPosicion(casillero: Casillero, posicion: Integer):Unit = {
+
+    var nuevosCasilleros: List[(Casillero,Jugador,Integer)] = List()
+
+    casilleros.foreach(
+      tup =>  if(tup._3 == posicion)
+        nuevosCasilleros = nuevosCasilleros :+ (casillero,tup._2,tup._3)
+      else
+        nuevosCasilleros = nuevosCasilleros :+ tup)
+    casilleros = nuevosCasilleros
+  }
+
+
+  def recogerReliquia(posicion: Integer): Casillero = {
+    var reliquia:Casillero = obtenerReliquiaEnPosicion(posicion)
+    colocarCasilleroEnPosicion(CasilleroTomado(),posicion)
+    reliquia
+  }
 
 
 }

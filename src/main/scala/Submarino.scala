@@ -11,6 +11,9 @@ case class Submarino() {
 
   def tieneJugador(jugador: Jugador): Boolean = jugadores.size > 0 && jugadores.contains(jugador)
 
+  def tieneJugadores(jugadores: List[Jugador]):Boolean = {
+    jugadores.count(j => tieneJugador(j)) == jugadores.size
+  }
 
 
 }

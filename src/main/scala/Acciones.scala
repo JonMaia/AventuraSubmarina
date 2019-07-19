@@ -7,7 +7,3 @@ case class Bajo() extends Accion
 case class Nadar() extends Accion
 case class RecongerReliquia() extends Accion
 case class AbandonarReliquia() extends Accion
-//case class () extends Accion
-//case class () extends Accion
-
-
