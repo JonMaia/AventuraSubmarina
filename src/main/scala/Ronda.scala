@@ -17,7 +17,6 @@ class Ronda(juego:Juego){
     nivelOxigeno = nivelOxigeno - totalCasillerosJugador(jugadorActual())
     if (seTerminariaElOxigeno())
       throw new ExceptionFinDeOxigeno
-    //nivelOxigeno = nivelOxigeno - totalCasillerosJugador(jugadorActual())
   }
 
   def vaciarOxigeno():Unit = nivelOxigeno = 0
@@ -44,8 +43,7 @@ class Ronda(juego:Juego){
 
     casillerosPorJugadores.foreach(
       tup =>
-        reliquiasPorJugador = reliquiasPorJugador.updated(tup._1,
-                  casillerosPorJugadores.getOrElse(tup._1,null).size))
+        reliquiasPorJugador = reliquiasPorJugador.updated(tup._1,casillerosPorJugadores.getOrElse(tup._1,null).size))
 
     reliquiasPorJugador
   }
@@ -55,7 +53,20 @@ class Ronda(juego:Juego){
 
     casillerosPorJugadores = casillerosPorJugadores.updated(juego.jugadorActual(),
       casillerosPorJugadores.getOrElse(juego.jugadorActual(),null):+ casillero.asInstanceOf[CasilleroConReliquia])
+    tablero.colocarCasilleroEnPosicion(CasilleroLibre(),juego.posicionJugadorActual())
   }
 
+  def jugadorTieneReliquia(jugador: Jugador):Boolean={
+    casillerosPorJugadores.getOrElse(jugador,null).nonEmpty
+  }
+
+  def obtenerPrimerReliquiaDeJugadorActual():CasilleroConReliquia={
+    var reliquiasDeJugador:List[CasilleroConReliquia] = casillerosPorJugadores.getOrElse(jugadorActual(),null)
+    var primerReliquia:CasilleroConReliquia = reliquiasDeJugador.head
+    reliquiasDeJugador = reliquiasDeJugador.filter(r => r != primerReliquia)
+
+    casillerosPorJugadores.updated(jugadorActual(),reliquiasDeJugador)
+    primerReliquia
+  }
 
 }

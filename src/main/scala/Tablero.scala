@@ -105,10 +105,10 @@ class Tablero() {
     posicionarJugadorEnCasillero(jugador,posicionActual + desplazamiento)
   }
 
-
   def colocarJugadorEnSubmarino(jugador: Jugador): Unit = {
     subirAlSubmarino(jugador)
   }
+
   def jugadores(): List[Jugador] = {
     casilleros.filter(tup => tup._2 != null).map(tup => tup._2)
   }
@@ -118,7 +118,6 @@ class Tablero() {
       submarino.subirJugador(jugador)
       if (submarino.tieneJugadores(jugadores()) && esFinDeRonda)
         throw new ExceptionSubieronTodos
-
   }
 
   def bajarDeSubmarino(jugador:Jugador,unidades:Integer):Unit = {
@@ -128,11 +127,34 @@ class Tablero() {
     }
   }
 
+  def subirAlSubmarinoDesdeTablero(jugador: Jugador,esFinDeRonda:Boolean = false): Unit = {
+    sacarJugadorDeCasillero(jugador,obtenerPosicionJugador(jugador))
+    submarino.subirJugador(jugador)
+    if (submarino.tieneJugadores(jugadores()) && esFinDeRonda)
+      throw new ExceptionSubieronTodos
+  }
+
   def estaCasilleroInicial(jugador: Jugador):Boolean = obtenerPosicionJugador(jugador) == 0
 
+
+  def eliminarCasillerosLibres():Unit = {
+    casilleros = casilleros.filter(tup => !tup._1.isInstanceOf[CasilleroLibre])
+  }
+
+  def reasignarCoordenasDeCasilleros():Unit = {
+
+    var nuevosCasilleros:List[(Casillero,Jugador,Integer)] = List()
+
+    for (i <- casilleros.indices) {
+      var cTemp = casilleros(i)
+      nuevosCasilleros = nuevosCasilleros :+ (cTemp._1,cTemp._2,i.asInstanceOf[Integer])
+    }
+    casilleros = nuevosCasilleros
+  }
+
   def reiniciar(): Unit = {
-    casilleros = List()
-    crearCasilleros()
+    eliminarCasillerosLibres()
+    reasignarCoordenasDeCasilleros()
   }
 
   def hayReliquiaEnPosicion(posicion: Integer): Boolean = {
@@ -163,10 +185,13 @@ class Tablero() {
 
   def recogerReliquia(posicion: Integer): Casillero = {
     var reliquia:Casillero = obtenerReliquiaEnPosicion(posicion)
-    colocarCasilleroEnPosicion(CasilleroTomado(),posicion)
+    colocarCasilleroEnPosicion(CasilleroLibre(),posicion)
     reliquia
   }
 
+  def cantidadReliquiaEnPosicion(posicion:Integer):Integer = {
+    casilleros.filter(tup => tup._3 == posicion).head._1.asInstanceOf[CasilleroConReliquia].reliquia
+  }
 
 }
 

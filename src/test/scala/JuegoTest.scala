@@ -271,29 +271,116 @@ class JuegoTest extends  FunSpec with Matchers{
       juego.iniciarRonda()
       juego.jugadorActual() shouldBe jugadorAmarillo
 
-      // Todavia no esta listo recoger reliquia
-      //juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
-      //juego.posicionJugador(jugadorAmarillo) shouldBe 4
+      juego.obtenerReliquiaEnPosicion(4) shouldBe 1
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
 
-      //juego.totalReliquiasJugador(jugadorRojo) shouldBe 456
+      juego.posicionJugador(jugadorAmarillo) shouldBe 4
+      juego.totalReliquiasJugador(jugadorAmarillo) shouldBe 1
+      juego.esCasilleroLibre(juego.posicionJugador(jugadorAmarillo)) shouldBe true
 
-      /*
+    }
+
+
+    it("un jugador abandona una reliquia en un casillero libre") {
+      Random.setSeed(1)
+      Random.nextInt(6)
+      Random.nextInt(6)
+      var juego = new Juego()
+      var jugadorRojo = Jugador(Rojo)
+      var jugadorAmarillo = Jugador(Amarillo)
+      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
+
+      juego.iniciar(jugadores)
+      juego.iniciarRonda()
+      juego.jugadorActual() shouldBe jugadorAmarillo
+
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
+      juego.posicionJugador(jugadorAmarillo) shouldBe 4
+
       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
-      juego.posicionJugador(jugadorRojo) shouldBe 5
+
+      juego.esCasilleroLibre(6) shouldBe false
+      juego.ponerCasilleroLibreEnPosicion(6)
+      juego.esCasilleroLibre(6) shouldBe true
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),AbandonarReliquia()))
+      juego.posicionJugador(jugadorAmarillo) shouldBe 6
+      juego.esCasilleroLibre(6) shouldBe false
+    }
+
+
+
+
+    it("un jugador abandona una reliquia en un casillero ocupado") {
+      Random.setSeed(1)
+      Random.nextInt(6)
+      Random.nextInt(6)
+      var juego = new Juego()
+      var jugadorRojo = Jugador(Rojo)
+      var jugadorAmarillo = Jugador(Amarillo)
+      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
+
+      juego.iniciar(jugadores)
+      juego.iniciarRonda()
+      juego.jugadorActual() shouldBe jugadorAmarillo
+
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
+      juego.posicionJugador(jugadorAmarillo) shouldBe 4
+
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+
+      juego.esCasilleroLibre(6) shouldBe false
+      intercept[ExceptionCasilleroOcupado] {
+        juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),AbandonarReliquia()))
+      }
+
+    }
+
+
+
+    it("un jugador sin reliquias abandona una en un casillero libre") {
+      Random.setSeed(1)
+      Random.nextInt(6)
+      Random.nextInt(6)
+      var juego = new Juego()
+      var jugadorRojo = Jugador(Rojo)
+      var jugadorAmarillo = Jugador(Amarillo)
+      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
+
+      juego.iniciar(jugadores)
+      juego.iniciarRonda()
+      juego.jugadorActual() shouldBe jugadorAmarillo
+
+      juego.esCasilleroLibre(4) shouldBe false
+      juego.ponerCasilleroLibreEnPosicion(4)
+      juego.esCasilleroLibre(4) shouldBe true
+
+      intercept[ExceptionJugadorSinReliquias] {
+        juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),AbandonarReliquia()))
+      }
+
+      juego.posicionJugador(jugadorAmarillo) shouldBe 4
+    }
+
+
+    it("al iniciar nueva ronda los estan jugadores sin reliquias") {
+      Random.setSeed(1)
+      Random.nextInt(6)
+      Random.nextInt(6)
+      var juego = new Juego()
+      var jugadorRojo = Jugador(Rojo)
+      var jugadorAmarillo = Jugador(Amarillo)
+      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
+
+      juego.iniciar(jugadores)
+      juego.iniciarRonda()
+      juego.jugadorActual() shouldBe jugadorAmarillo
 
       juego.vaciarOxigeno()
       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
       juego.numeroDeRonda shouldBe 2
 
-      juego.vaciarOxigeno()
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
-      juego.numeroDeRonda shouldBe 3
 
-      intercept[ExceptionFinDeJuego] { juego.vaciarOxigeno() }
-
-       */
     }
-
 
 
     /*
@@ -301,15 +388,119 @@ class JuegoTest extends  FunSpec with Matchers{
 
     }
     */
-
-
     /*
     it("") {
 
     }
-    */
+    *//*
+    it("") {
 
+    }
+    */
     /*
+    it("") {
+
+    }
+    *//*
+    it("") {
+
+    }
+    */
+    /*
+    it("") {
+
+    }
+    *//*
+    it("") {
+
+    }
+    */
+    /*
+    it("") {
+
+    }
+    *//*
+    it("") {
+
+    }
+    */
+    /*
+    it("") {
+
+    }
+    *//*
+    it("") {
+
+    }
+    */
+    /*
+    it("") {
+
+    }
+    *//*
+    it("") {
+
+    }
+    */
+    /*
+    it("") {
+
+    }
+    *//*
+    it("") {
+
+    }
+    */
+    /*
+    it("") {
+
+    }
+    *//*
+    it("") {
+
+    }
+    */
+    /*
+    it("") {
+
+    }
+    *//*
+    it("") {
+
+    }
+    */
+    /*
+    it("") {
+
+    }
+    *//*
+    it("") {
+
+    }
+    */
+    /*
+    it("") {
+
+    }
+    *//*
+    it("") {
+
+    }
+    */
+    /*
+    it("") {
+
+    }
+    *//*
+    it("") {
+
+    }
+    */
+    /*
+    it("") {
+
+    }
+    *//*
     it("") {
 
     }
