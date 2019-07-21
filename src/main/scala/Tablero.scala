@@ -71,10 +71,10 @@ class Tablero() {
   def subir(jugador: Jugador, unidades: Integer): Unit ={
     var posicionActual:Integer = obtenerPosicionJugador(jugador)
     var desplazamiento:Integer = 0
-    var nuevaPosicion: Integer = 0
+
 
     (0 to (unidades-1)).foreach( _ =>
-      desplazamiento = desplazamiento + (if(hayOtroJugadorEnCasillero(posicionActual,jugador)) 2 else 1)
+      desplazamiento = desplazamiento + (if(hayOtroJugadorEnCasillero(posicionActual-desplazamiento,jugador)) 2 else 1)
     )
     sacarJugadorDeCasillero(jugador,posicionActual)
 
@@ -88,7 +88,7 @@ class Tablero() {
     var posicionActual:Integer = if (submarino.tieneJugador(jugador))0 else obtenerPosicionJugador(jugador)
     var desplazamiento:Integer = 0
 
-    (0 to (unidades-1)).foreach( _ =>
+    (0 to (unidades)).foreach( _ =>
       desplazamiento = desplazamiento + (if(hayOtroJugadorEnCasillero(posicionActual+desplazamiento,jugador))2 else 1)
     )
     sacarJugadorDeCasillero(jugador,posicionActual)
@@ -192,6 +192,9 @@ class Tablero() {
   def cantidadReliquiaEnPosicion(posicion:Integer):Integer = {
     casilleros.filter(tup => tup._3 == posicion).head._1.asInstanceOf[CasilleroConReliquia].reliquia
   }
+
+  def size():Integer = casilleros.size
+
 
 }
 

@@ -21,7 +21,6 @@ class Ronda(juego:Juego){
 
   def vaciarOxigeno():Unit = nivelOxigeno = 0
 
-
   def siguienteTurno():Integer = { // solo cuando cambia el turno
     if(indexSiguienteJugador == casillerosPorJugadores.size -1) 0 else indexSiguienteJugador + 1
   }
@@ -68,5 +67,17 @@ class Ronda(juego:Juego){
     casillerosPorJugadores.updated(jugadorActual(),reliquiasDeJugador)
     primerReliquia
   }
+
+
+  def jugadorEstaSinReliquias(jugador: Jugador):Boolean={
+    casillerosPorJugadores.getOrElse(jugador,null).isEmpty
+  }
+
+  def jugadoresEstanSinReliquias():Boolean ={
+    var estanSinReliquias: Boolean = true
+    casillerosPorJugadores.keys.foreach(j=> estanSinReliquias = estanSinReliquias && jugadorEstaSinReliquias(j))
+    estanSinReliquias
+  }
+
 
 }

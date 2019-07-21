@@ -17,8 +17,12 @@ class Juego() {
     jugadores.foreach(j => tablero.colocarJugadorEnSubmarino(j))
   }
 
+
+  def calcularJugadorGanador():Color= reliquiasPorJugador.toList.maxBy(_._2)._1.color
+
   def iniciarRonda(): Unit = {
-    if (numeroDeRonda == 4) throw new ExceptionFinDeJuego
+
+    if (numeroDeRonda == 4) throw new ExceptionFinDeJuego("El ganador es: "+calcularJugadorGanador())
     ronda = new Ronda(this)
   }
 
@@ -71,15 +75,13 @@ class Juego() {
   def nivelDeOxigeno(): Integer = ronda.nivelOxigeno
   def vaciarOxigeno():Unit = {
     ronda.vaciarOxigeno()
-    if (numeroDeRonda == 3) throw new ExceptionFinDeJuego
+    if (numeroDeRonda == 3) throw new ExceptionFinDeJuego("El ganador es: "+calcularJugadorGanador())
   }
   def jugadorActual():Jugador = ronda.jugadorActual()
 
   def subirJugadoresASubmarino(jugadores: List[Jugador]):Unit = {
     jugadores.foreach(j=> tablero.subirAlSubmarinoDesdeTablero(j))
   }
-
-
 
   def contabilizarReliquiasPorJugador():Unit = {
     ronda.totalReliquiasPorJugadores().foreach(tup =>
@@ -145,5 +147,14 @@ class Juego() {
   def ponerCasilleroLibreEnPosicion(posicion:Integer): Unit = {
     tablero.colocarCasilleroEnPosicion(CasilleroLibre(),posicion)
   }
+
+  def jugadoresEstanSinReliquias():Boolean ={
+    ronda.jugadoresEstanSinReliquias()
+  }
+
+
+  def tamanioTablero():Integer = tablero.size()
+
+
 
 }

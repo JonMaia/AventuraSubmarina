@@ -1,6 +1,9 @@
 import org.scalatest.{FunSpec, Matchers}
 import scala.util.Random
 
+// crear funcion desplazarRandomN(Integer)
+// crear variable con lista de acciones
+//
 
 
 class JuegoTest extends  FunSpec with Matchers{
@@ -67,7 +70,7 @@ class JuegoTest extends  FunSpec with Matchers{
 
        juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
        juego.posicionJugador(jugadorAmarillo) should not equal 3
-       juego.posicionJugador(jugadorAmarillo) shouldBe  7
+       juego.posicionJugador(jugadorAmarillo) shouldBe  8
 
      }
 
@@ -93,7 +96,7 @@ class JuegoTest extends  FunSpec with Matchers{
 
       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
       juego.posicionJugador(jugadorAmarillo) should not equal 3
-      juego.posicionJugador(jugadorAmarillo) shouldBe  7
+      juego.posicionJugador(jugadorAmarillo) shouldBe  8
 
 
       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
@@ -101,7 +104,7 @@ class JuegoTest extends  FunSpec with Matchers{
 
       Random.nextInt(6)
       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
-      juego.posicionJugador(jugadorAmarillo) shouldBe 4
+      juego.posicionJugador(jugadorAmarillo) shouldBe 5
 
     }
 
@@ -127,7 +130,7 @@ class JuegoTest extends  FunSpec with Matchers{
 
       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
       juego.posicionJugador(jugadorAmarillo) should not equal 3
-      juego.posicionJugador(jugadorAmarillo) shouldBe  7
+      juego.posicionJugador(jugadorAmarillo) shouldBe  8
 
 
       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
@@ -135,7 +138,7 @@ class JuegoTest extends  FunSpec with Matchers{
 
       Random.nextInt(6)
       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
-      juego.posicionJugador(jugadorAmarillo) shouldBe 4
+      juego.posicionJugador(jugadorAmarillo) shouldBe 5
 
       Random.nextInt(6)
       Random.nextInt(6)
@@ -174,8 +177,12 @@ class JuegoTest extends  FunSpec with Matchers{
 
       juego.numeroDeRonda shouldBe 2
 
+      juego.posicionJugador(jugadorAmarillo) shouldBe -1
+      juego.posicionJugador(jugadorRojo) shouldBe -1
+
+
       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
-      juego.posicionJugador(jugadorAmarillo) shouldBe 3
+      juego.posicionJugador(jugadorAmarillo) shouldBe 2
 
       juego.vaciarOxigeno()
 
@@ -253,6 +260,8 @@ class JuegoTest extends  FunSpec with Matchers{
       juego.numeroDeRonda shouldBe 3
 
       intercept[ExceptionFinDeJuego] { juego.vaciarOxigeno() }
+      //val thrown = the [ExceptionFinDeJuego] thrownBy juego.vaciarOxigeno()
+      //thrown.getMessage should equal ("El ganador es: "+juego.calcularJugadorGanador())
     }
 
 
@@ -362,7 +371,7 @@ class JuegoTest extends  FunSpec with Matchers{
     }
 
 
-    it("al iniciar nueva ronda los estan jugadores sin reliquias") {
+    it("al iniciar nueva ronda los jugadores estan sin reliquias") {
       Random.setSeed(1)
       Random.nextInt(6)
       Random.nextInt(6)
@@ -375,24 +384,106 @@ class JuegoTest extends  FunSpec with Matchers{
       juego.iniciarRonda()
       juego.jugadorActual() shouldBe jugadorAmarillo
 
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
       juego.vaciarOxigeno()
+
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.numeroDeRonda shouldBe 2
+      juego.jugadoresEstanSinReliquias() shouldBe true
+
+    }
+
+
+    it("al iniciar nueva ronda se eliminan del tablero los casilleros libres ") {
+      Random.setSeed(1)
+      Random.nextInt(6)
+      Random.nextInt(6)
+      var juego = new Juego()
+      var jugadorRojo = Jugador(Rojo)
+      var jugadorAmarillo = Jugador(Amarillo)
+      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
+
+      juego.iniciar(jugadores)
+      juego.iniciarRonda()
+      juego.jugadorActual() shouldBe jugadorAmarillo
+
+      var tamanioTableroRonda1:Integer = juego.tamanioTablero()
+
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
+      Random.nextInt(6)
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar(),RecongerReliquia()))
+      Random.nextInt(6)
+      Random.nextInt(6)
+      Random.nextInt(6)
+      Random.nextInt(6)
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar(),RecongerReliquia()))
+
+      juego.vaciarOxigeno()
+
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.numeroDeRonda shouldBe 2
+      var tamanioTableroRonda2:Integer = juego.tamanioTablero()
+
+      tamanioTableroRonda2 shouldBe tamanioTableroRonda1 - 5
+    }
+
+
+    it("gana el jugardor con mas dinero en reliquias acumulado") {
+      Random.setSeed(1)
+      Random.nextInt(6)
+      var juego = new Juego()
+      var jugadorRojo = Jugador(Rojo)
+      var jugadorAmarillo = Jugador(Amarillo)
+      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
+
+      juego.iniciar(jugadores)
+      juego.iniciarRonda()
+      juego.jugadorActual() shouldBe jugadorAmarillo
+
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
+      juego.posicionJugador(jugadorAmarillo) shouldBe 3
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
+      juego.posicionJugador(jugadorRojo) shouldBe 5
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
+      juego.posicionJugador(jugadorAmarillo) shouldBe 7
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
+      juego.posicionJugador(jugadorRojo) shouldBe 9
+      Random.nextInt(6)
+      Random.nextInt(6)
+      //Random.nextInt(6)
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar(),RecongerReliquia()))
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar(),RecongerReliquia()))
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar(),RecongerReliquia()))
+
+
+      juego.posicionJugador(jugadorAmarillo) shouldBe -1
+      //juego.posicionJugador(jugadorRojo) shouldBe -1
+
+
+      /*
       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
       juego.numeroDeRonda shouldBe 2
 
+      juego.vaciarOxigeno()
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.numeroDeRonda shouldBe 3
+
+      //intercept[ExceptionFinDeJuego] { juego.vaciarOxigeno() }
+      val thrown = the [ExceptionFinDeJuego] thrownBy juego.vaciarOxigeno()
+      thrown.getMessage should equal ("El ganador es: "+juego.calcularJugadorGanador())
+      */
 
     }
+
+
+
 
 
     /*
-    it("") {
-
-    }
-    */
-    /*
-    it("") {
-
-    }
-    *//*
     it("") {
 
     }
