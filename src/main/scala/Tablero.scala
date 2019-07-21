@@ -73,7 +73,7 @@ class Tablero() {
     var desplazamiento:Integer = 0
 
 
-    (0 to (unidades-1)).foreach( _ =>
+    (0 to unidades).foreach( _ =>
       desplazamiento = desplazamiento + (if(hayOtroJugadorEnCasillero(posicionActual-desplazamiento,jugador)) 2 else 1)
     )
     sacarJugadorDeCasillero(jugador,posicionActual)
@@ -110,7 +110,11 @@ class Tablero() {
   }
 
   def jugadores(): List[Jugador] = {
-    casilleros.filter(tup => tup._2 != null).map(tup => tup._2)
+    var _jugadores:List[Jugador] = casilleros.filter(tup => tup._2 != null).map(tup => tup._2)
+    if (_jugadores.nonEmpty)
+      _jugadores
+    else
+      submarino.jugadores
   }
 
   def subirAlSubmarino(jugador: Jugador,esFinDeRonda:Boolean = false): Unit = {
@@ -132,6 +136,7 @@ class Tablero() {
     submarino.subirJugador(jugador)
     if (submarino.tieneJugadores(jugadores()) && esFinDeRonda)
       throw new ExceptionSubieronTodos
+    //sacarJugadorDeCasillero(jugador,obtenerPosicionJugador(jugador))
   }
 
   def estaCasilleroInicial(jugador: Jugador):Boolean = obtenerPosicionJugador(jugador) == 0

@@ -42,7 +42,11 @@ class Ronda(juego:Juego){
 
     casillerosPorJugadores.foreach(
       tup =>
-        reliquiasPorJugador = reliquiasPorJugador.updated(tup._1,casillerosPorJugadores.getOrElse(tup._1,null).size))
+        reliquiasPorJugador = reliquiasPorJugador.updated(tup._1,
+                                                          casillerosPorJugadores.getOrElse(tup._1,null)
+                                                          .map(i => i.reliquia).sum
+                                                         )
+    )
 
     reliquiasPorJugador
   }
