@@ -419,7 +419,8 @@ class JuegoTest extends  FunSpec with Matchers{
 
       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar(),RecongerReliquia()))
       Random.nextInt(6)
-
+      Random.nextInt(6)
+      Random.nextInt(6)
       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar(),RecongerReliquia()))
 
       juego.vaciarOxigeno()
@@ -444,36 +445,51 @@ class JuegoTest extends  FunSpec with Matchers{
       juego.iniciarRonda()
       juego.jugadorActual() shouldBe jugadorAmarillo
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
+      Random.nextInt(6)
+      Random.nextInt(6)
+      Random.nextInt(6)
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      //juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
+      juego.nivelDeOxigeno() shouldBe 25
+      juego.posicionJugador(jugadorAmarillo) shouldBe 2
 
+
+      Random.nextInt(6)
+      Random.nextInt(6)
+      Random.nextInt(6)
+      Random.nextInt(6)
       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
-      juego.posicionJugador(jugadorRojo) shouldBe 5
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
-      juego.posicionJugador(jugadorAmarillo) shouldBe 7
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
-      juego.posicionJugador(jugadorRojo) shouldBe 9
+      juego.nivelDeOxigeno() shouldBe 25
+      juego.posicionJugador(jugadorRojo) shouldBe 1
+      juego.posicionJugador(jugadorAmarillo) shouldBe 2
+
       Random.nextInt(6)
       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
-      juego.posicionJugador(jugadorAmarillo) shouldBe 5
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar(),RecongerReliquia()))
-      juego.posicionJugador(jugadorRojo) shouldBe 8
-      Random.nextInt(6)
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar(),RecongerReliquia()))
-      juego.posicionJugador(jugadorAmarillo) shouldBe 4
-
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
-
+      juego.nivelDeOxigeno() shouldBe 25
       juego.posicionJugador(jugadorAmarillo) shouldBe -1
-      juego.posicionJugador(jugadorRojo) shouldBe -1
+
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.nivelDeOxigeno() shouldBe 24
+      juego.posicionJugador(jugadorRojo) shouldBe 4
+
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      juego.nivelDeOxigeno() shouldBe 24
+      juego.posicionJugador(jugadorRojo) shouldBe 1
+
+      //juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      //juego.nivelDeOxigeno() shouldBe 24
+      //juego.posicionJugador(jugadorAmarillo) shouldBe 2
+
+      //juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      //juego.nivelDeOxigeno() shouldBe 23
+      //juego.posicionJugador(jugadorRojo) shouldBe -1
+
+      //juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      //juego.nivelDeOxigeno() shouldBe 25
+      //juego.posicionJugador(jugadorAmarillo) shouldBe -1
 
       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
       juego.numeroDeRonda shouldBe 2
-
-
 
       juego.vaciarOxigeno()
       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))

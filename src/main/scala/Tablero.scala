@@ -72,16 +72,21 @@ class Tablero() {
     var posicionActual:Integer = obtenerPosicionJugador(jugador)
     var desplazamiento:Integer = 0
 
-
+    // TODO : REVISAR CONDICION DE HAYOTROJUGADORENCASILLERO
     (0 to unidades).foreach( _ =>
       desplazamiento = desplazamiento + (if(hayOtroJugadorEnCasillero(posicionActual-desplazamiento,jugador)) 2 else 1)
     )
-    sacarJugadorDeCasillero(jugador,posicionActual)
-
-    if (posicionActual - desplazamiento < 0 )
-      subirAlSubmarino(jugador,esFinDeRonda = true)
-    else
-      posicionarJugadorEnCasillero(jugador,posicionActual - desplazamiento)
+    if (unidades != 0) {
+      sacarJugadorDeCasillero(jugador, posicionActual)
+      if (posicionActual - desplazamiento < 0 )
+        subirAlSubmarino(jugador,esFinDeRonda = true)
+      else
+        posicionarJugadorEnCasillero(jugador,posicionActual - desplazamiento)
+    }
+    //if (posicionActual - desplazamiento < 0 )
+    //  subirAlSubmarino(jugador,esFinDeRonda = true)
+    //else
+    //  posicionarJugadorEnCasillero(jugador,posicionActual - desplazamiento)
   }
 
   def bajar(jugador: Jugador, unidades: Integer): Unit ={

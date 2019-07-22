@@ -41,7 +41,7 @@ class Juego() {
 
   def nadar(direccion: Direccion): Unit = {
     var valorDado =  Randoms.lanzarDado()
-    //print("Valor del dado " + valorDado + "\n")
+    print("Valor del dado " + valorDado + "\n")
     var unidadesAMover = valorDado - ronda.totalCasillerosJugador(ronda.jugadorActual())
 
     mover(unidadesAMover,direccion)
