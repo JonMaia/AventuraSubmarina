@@ -80,7 +80,14 @@ class Juego() {
     ronda.vaciarOxigeno()
     if (numeroDeRonda == 3) throw new ExceptionFinDeJuego("El ganador es: "+calcularJugadorGanador())
   }
-  def jugadorActual():Jugador = ronda.jugadorActual()
+
+  def jugadorActual():Jugador = {
+    if(tablero.submarino.tieneJugador(ronda.jugadorActual()) && tablero.jugadores() == null){
+      ronda.actualizarSiguienteJugador()
+      ronda.jugadorActual()}
+    else
+      ronda.jugadorActual()
+  }
 
   def subirJugadoresASubmarino(jugadores: List[Jugador]):Unit = {
     jugadores.foreach(j=> tablero.subirAlSubmarinoDesdeTablero(j))

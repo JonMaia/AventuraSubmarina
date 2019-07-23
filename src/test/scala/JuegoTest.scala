@@ -448,51 +448,52 @@ class JuegoTest extends  FunSpec with Matchers{
       Random.nextInt(6)
       Random.nextInt(6)
       Random.nextInt(6)
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
-      //juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
-      juego.nivelDeOxigeno() shouldBe 25
-      juego.posicionJugador(jugadorAmarillo) shouldBe 2
-
-
-      Random.nextInt(6)
-      Random.nextInt(6)
-      Random.nextInt(6)
-      Random.nextInt(6)
       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
       juego.nivelDeOxigeno() shouldBe 25
-      juego.posicionJugador(jugadorRojo) shouldBe 1
       juego.posicionJugador(jugadorAmarillo) shouldBe 2
+
+
+      Random.nextInt(6)
+      Random.nextInt(6)
+      Random.nextInt(6)
+      Random.nextInt(6)
+      //juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.nivelDeOxigeno() shouldBe 25
+      juego.posicionJugador(jugadorRojo) shouldBe 1
 
       Random.nextInt(6)
       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
-      juego.nivelDeOxigeno() shouldBe 25
+      juego.nivelDeOxigeno() shouldBe 24
       juego.posicionJugador(jugadorAmarillo) shouldBe -1
 
       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
       juego.nivelDeOxigeno() shouldBe 24
-      juego.posicionJugador(jugadorRojo) shouldBe 4
+      juego.posicionJugador(jugadorRojo) shouldBe 5
 
       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
-      juego.nivelDeOxigeno() shouldBe 24
-      juego.posicionJugador(jugadorRojo) shouldBe 1
+      juego.nivelDeOxigeno() shouldBe 23
+      juego.posicionJugador(jugadorAmarillo) shouldBe -1
 
-      //juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
-      //juego.nivelDeOxigeno() shouldBe 24
-      //juego.posicionJugador(jugadorAmarillo) shouldBe 2
+      Random.nextInt(6)
+      Random.nextInt(6)
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      juego.nivelDeOxigeno() shouldBe 23
+      juego.posicionJugador(jugadorRojo) shouldBe 0
 
-      //juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
-      //juego.nivelDeOxigeno() shouldBe 23
-      //juego.posicionJugador(jugadorRojo) shouldBe -1
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      juego.nivelDeOxigeno() shouldBe 22
+      juego.posicionJugador(jugadorAmarillo) shouldBe -1
 
-      //juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
-      //juego.nivelDeOxigeno() shouldBe 25
-      //juego.posicionJugador(jugadorAmarillo) shouldBe -1
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      juego.nivelDeOxigeno() shouldBe 25
+      juego.posicionJugador(jugadorRojo) shouldBe -1
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      //juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
       juego.numeroDeRonda shouldBe 2
 
       juego.vaciarOxigeno()
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
       juego.numeroDeRonda shouldBe 3
 
       val execpt = the [ExceptionFinDeJuego] thrownBy juego.vaciarOxigeno()
