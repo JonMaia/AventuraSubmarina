@@ -7,8 +7,14 @@ class RandomsSpec extends  FunSpec with Matchers {
     Random.setSeed(1)
 
     it("lanzarDadoControlable") {
-      Randoms.lanzarDado(5) shouldEqual 5
-      Randoms.lanzarDado(3) shouldEqual 3
+      Randoms.lanzarControlable(5)
+      Randoms.lanzarDado() shouldEqual 5
+
+      Randoms.lanzarControlable(3)
+      Randoms.lanzarDado() shouldEqual 3
+
+      Randoms.desactivarControlable()
+
       Randoms.lanzarDado() shouldBe 3
       Randoms.lanzarDado() shouldBe 4
       Randoms.lanzarDado() shouldBe 1

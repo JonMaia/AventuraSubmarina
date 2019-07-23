@@ -507,11 +507,24 @@ class JuegoTest extends  FunSpec with Matchers{
 
 
 
-    /*
-    it("") {
+
+    it("Test lanzar dado controlable") {
+      var juego = new Juego()
+      var jugadorRojo = Jugador(Rojo)
+      var jugadorAmarillo = Jugador(Amarillo)
+      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
+
+      juego.iniciar(jugadores)
+      juego.iniciarRonda()
+      juego.jugadorActual() shouldBe jugadorAmarillo
+
+      Randoms.lanzarControlable(5)
+      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.posicionJugador(jugadorAmarillo) shouldBe 4
+      juego.posicionJugador(jugadorRojo) shouldBe -1
 
     }
-    */
+
     /*
     it("") {
 
