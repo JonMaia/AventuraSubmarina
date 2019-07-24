@@ -1,6 +1,5 @@
 trait Accion
 
-
 case class ConsumirOxigeno() extends Accion
 case class Subo() extends Accion
 case class Bajo() extends Accion

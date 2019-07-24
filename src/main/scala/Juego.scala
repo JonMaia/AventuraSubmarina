@@ -8,9 +8,9 @@ class Juego() {
   var reliquiasPorJugador: Map[Jugador,Integer] = Map()
 
 
-  def agregarJugador(jugador: Jugador): Unit = {
+  def agregarJugador(jugador: Jugador): Unit =
     reliquiasPorJugador = reliquiasPorJugador.updated(jugador, 0)
-  }
+
 
   def iniciar(jugadores:List[Jugador]): Unit = {
     jugadores.foreach(j => this.agregarJugador(j))
@@ -18,39 +18,34 @@ class Juego() {
   }
 
 
-  def calcularJugadorGanador():Color = {
+  def calcularJugadorGanador():Color =
     reliquiasPorJugador.toList.maxBy(_._2)._1.color
-  }
 
-  def iniciarRonda(): Unit = {
 
+  def iniciarRonda(): Unit =
     if (numeroDeRonda == 4) throw new ExceptionFinDeJuego("El ganador es: "+calcularJugadorGanador())
-    ronda = new Ronda(this)
-  }
+    else ronda = new Ronda(this)
+
 
   def consumirOxigeno():Unit = ronda.consumirOxigeno()
 
+
   def jugadores():List[Jugador] = reliquiasPorJugador.keys.toList
 
-  //def jugadorSeMueveA(direccion: Direccion):Unit = direccionJugadorActual = direccion
 
-  def mover(unidadesAMover: Int,direccion: Direccion): Unit = {
+  def mover(unidadesAMover: Int,direccion: Direccion): Unit =
     tablero.moverJugador(ronda.jugadorActual(),unidadesAMover,direccion)
-  }
+
 
   def nadar(direccion: Direccion): Unit = {
     var valorDado =  Randoms.lanzarDado()
-    //print("Valor del dado " + valorDado + "\n")
     var unidadesAMover = valorDado - ronda.totalCasillerosJugador(ronda.jugadorActual())
-
     mover(unidadesAMover,direccion)
-
   }
 
+
   def iniciarTurno(acciones: List[Accion]):Unit= {
-
     var jugadorSeVaAMoverPara: Direccion = Abajo
-
     try {
       acciones.foreach {
         case ConsumirOxigeno() => ronda.consumirOxigeno()
@@ -59,7 +54,6 @@ class Juego() {
         case Nadar() if ronda.hayOxigeno() => nadar(jugadorSeVaAMoverPara)
         case RecongerReliquia() => recogerReliquia()
         case AbandonarReliquia() => abandonarReliquia()
-        //case NoHacerNada() => noHacerNada()
       }
       ronda.actualizarSiguienteJugador()
     }
@@ -70,15 +64,18 @@ class Juego() {
 
   }
 
-  def posicionJugador(jugador: Jugador): Integer = {
-    tablero.obtenerPosicionJugador(jugador)
-  }
+
+  def posicionJugador(jugador: Jugador): Integer = tablero.obtenerPosicionJugador(jugador)
+
 
   def nivelDeOxigeno(): Integer = ronda.nivelOxigeno
+
+
   def vaciarOxigeno():Unit = {
     ronda.vaciarOxigeno()
     if (numeroDeRonda == 3) throw new ExceptionFinDeJuego("El ganador es: "+calcularJugadorGanador())
   }
+
 
   def jugadorActual():Jugador = {
     if(tablero.submarino.tieneJugador(ronda.jugadorActual()) && tablero.jugadores() == null){
@@ -88,9 +85,10 @@ class Juego() {
       ronda.jugadorActual()
   }
 
-  def subirJugadoresASubmarino(jugadores: List[Jugador]):Unit = {
+
+  def subirJugadoresASubmarino(jugadores: List[Jugador]):Unit =
     jugadores.foreach(j=> tablero.subirAlSubmarinoDesdeTablero(j))
-  }
+
 
   def contabilizarReliquiasPorJugador():Unit = {
     ronda.totalReliquiasPorJugadores().foreach(tup =>
@@ -98,6 +96,7 @@ class Juego() {
         reliquiasPorJugador = reliquiasPorJugador.updated(tup._1,reliquiasPorJugador.getOrElse(tup._1,null) + tup._2)
     )
   }
+
 
   def seTerminoRonda():Unit = {
     numeroDeRonda += 1
@@ -108,15 +107,16 @@ class Juego() {
 
 
   def seTerminoRondaPorFaltaDeOxigeno():Unit = {
-
     contabilizarReliquiasPorJugador()
     seTerminoRonda()
   }
+
 
   def seTerminoRondaSubieronTodos():Unit = {
     contabilizarReliquiasPorJugador()
     seTerminoRonda()
   }
+
 
   def recogerReliquia(): Unit = {
     if (tablero.posicionJugadorTieneReliquia(jugadorActual()))
@@ -125,42 +125,38 @@ class Juego() {
       throw new ExceptionCasilleroSinReliquia()
   }
 
-  def posicionJugadorActual():Integer = {
+
+  def posicionJugadorActual():Integer =
     posicionJugador(jugadorActual())
-  }
 
-  def totalReliquiasJugador(jugador: Jugador):Integer = {
+
+  def totalReliquiasJugador(jugador: Jugador):Integer =
     ronda.totalReliquiasJugador(jugador)
-  }
 
-  def obtenerReliquiaEnPosicion(posicion:Integer):Integer = {
+
+  def obtenerReliquiaEnPosicion(posicion:Integer):Integer =
     tablero.cantidadReliquiaEnPosicion(posicion)
-  }
 
 
   def abandonarReliquia(): Unit = {
     // Se asume que el jugador abandona la primer reliquia que tenga
     if (esCasilleroLibre(posicionJugadorActual()))
-      if (ronda.jugadorTieneReliquia(jugadorActual())){
-        tablero.colocarCasilleroEnPosicion(ronda.obtenerPrimerReliquiaDeJugadorActual(),
-          posicionJugadorActual())
-      }
+      if (ronda.jugadorTieneReliquia(jugadorActual()))
+        tablero.colocarCasilleroEnPosicion(ronda.obtenerPrimerReliquiaDeJugadorActual(),posicionJugadorActual())
       else throw new ExceptionJugadorSinReliquias()
     else throw new ExceptionCasilleroOcupado()
   }
 
 
-  def esCasilleroLibre(posicion:Integer):Boolean = {
-    !tablero.hayReliquiaEnPosicion(posicion)
-  }
+  def esCasilleroLibre(posicion:Integer):Boolean = !tablero.hayReliquiaEnPosicion(posicion)
+
 
   def ponerCasilleroLibreEnPosicion(posicion:Integer): Unit = {
     tablero.colocarCasilleroEnPosicion(CasilleroLibre(),posicion)
   }
 
-  def jugadoresEstanSinReliquias():Boolean ={
-    ronda.jugadoresEstanSinReliquias()
-  }
+
+  def jugadoresEstanSinReliquias():Boolean = ronda.jugadoresEstanSinReliquias()
 
 
   def tamanioTablero():Integer = tablero.size()

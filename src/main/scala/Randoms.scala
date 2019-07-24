@@ -5,13 +5,13 @@ object Randoms {
 
   var numero: Int = -1
 
-  def lanzarControlable(valorControlable: Int): Unit = {
+  def lanzarControlable(valorControlable: Int): Unit =
     this.numero = valorControlable
-  }
 
-  def desactivarControlable(): Unit = {
+
+  def desactivarControlable(): Unit =
     this.numero = -1
-  }
+
 
   //Cuando se usa sin parametro es random
   def lanzarDado(): Int = {
@@ -32,7 +32,5 @@ object Randoms {
       } else {
       numero
     }
-
   }
-
 }
