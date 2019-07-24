@@ -19,7 +19,6 @@ class Juego() {
 
 
   def calcularJugadorGanador():Color = {
-    //print ("calculo ganador: " + reliquiasPorJugador.toList.maxBy(_._2)._1.color)
     reliquiasPorJugador.toList.maxBy(_._2)._1.color
   }
 
@@ -41,7 +40,7 @@ class Juego() {
 
   def nadar(direccion: Direccion): Unit = {
     var valorDado =  Randoms.lanzarDado()
-    print("Valor del dado " + valorDado + "\n")
+    //print("Valor del dado " + valorDado + "\n")
     var unidadesAMover = valorDado - ronda.totalCasillerosJugador(ronda.jugadorActual())
 
     mover(unidadesAMover,direccion)
@@ -120,13 +119,10 @@ class Juego() {
   }
 
   def recogerReliquia(): Unit = {
-    if (tablero.posicionJugadorTieneReliquia(jugadorActual())){
-      print("Jugador: " + jugadorActual() + " recoge reliquia: " + obtenerReliquiaEnPosicion(posicionJugadorActual()) + "\n")
+    if (tablero.posicionJugadorTieneReliquia(jugadorActual()))
       ronda.recongerReliquia(tablero)
-    }
     else
       throw new ExceptionCasilleroSinReliquia()
-
   }
 
   def posicionJugadorActual():Integer = {
@@ -168,7 +164,4 @@ class Juego() {
 
 
   def tamanioTablero():Integer = tablero.size()
-
-
-
 }
