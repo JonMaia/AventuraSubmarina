@@ -11,7 +11,10 @@ class Ronda(juego:Juego){
   )
 
   def seTerminariaElOxigeno(): Boolean = nivelOxigeno - totalCasillerosJugador(jugadorActual()) <= 0
+
+
   def hayOxigeno():Boolean = nivelOxigeno > 0
+
 
   def consumirOxigeno():Unit = {
     nivelOxigeno = nivelOxigeno - totalCasillerosJugador(jugadorActual())
@@ -19,37 +22,42 @@ class Ronda(juego:Juego){
       throw new ExceptionFinDeOxigeno
   }
 
+
   def vaciarOxigeno():Unit = nivelOxigeno = 0
 
-  def siguienteTurno():Integer = { // solo cuando cambia el turno
+
+  def siguienteTurno():Integer =
     if(indexSiguienteJugador == casillerosPorJugadores.size -1) 0 else indexSiguienteJugador + 1
-  }
+
 
   def jugadorActual(): Jugador = juego.jugadores()(indexSiguienteJugador)
 
+
   def actualizarSiguienteJugador():Unit = indexSiguienteJugador = siguienteTurno()
+
 
   def nivelDeOxigeno():Integer = nivelOxigeno
 
+
   def totalCasillerosJugador(jugador: Jugador): Integer = casillerosPorJugadores.getOrElse(jugador,null).size
 
-  def totalReliquiasJugador(jugador: Jugador):Integer ={
+
+  def totalReliquiasJugador(jugador: Jugador):Integer =
     casillerosPorJugadores.getOrElse(jugador,null).map(r => r.reliquia).sum
-  }
+
 
   def totalReliquiasPorJugadores(): Map[Jugador,Integer] = {
     var reliquiasPorJugador: Map[Jugador,Integer] = Map()
 
-    casillerosPorJugadores.foreach(
-      tup =>
-        reliquiasPorJugador = reliquiasPorJugador.updated(tup._1,
-                                                          casillerosPorJugadores.getOrElse(tup._1,null)
-                                                          .map(i => i.reliquia).sum
-                                                         )
+    casillerosPorJugadores.foreach(tup =>
+      reliquiasPorJugador = reliquiasPorJugador.updated(tup._1,
+                                                        casillerosPorJugadores.getOrElse(tup._1,null)
+                                                        .map(i => i.reliquia).sum
+                                                       )
     )
-
     reliquiasPorJugador
   }
+
 
   def recongerReliquia(tablero: Tablero): Unit = {
     var casillero: Casillero = tablero.recogerReliquia(juego.posicionJugadorActual())
@@ -59,9 +67,10 @@ class Ronda(juego:Juego){
     tablero.colocarCasilleroEnPosicion(CasilleroLibre(),juego.posicionJugadorActual())
   }
 
-  def jugadorTieneReliquia(jugador: Jugador):Boolean={
+
+  def jugadorTieneReliquia(jugador: Jugador):Boolean =
     casillerosPorJugadores.getOrElse(jugador,null).nonEmpty
-  }
+
 
   def obtenerPrimerReliquiaDeJugadorActual():CasilleroConReliquia={
     var reliquiasDeJugador:List[CasilleroConReliquia] = casillerosPorJugadores.getOrElse(jugadorActual(),null)
@@ -73,15 +82,13 @@ class Ronda(juego:Juego){
   }
 
 
-  def jugadorEstaSinReliquias(jugador: Jugador):Boolean={
+  def jugadorEstaSinReliquias(jugador: Jugador):Boolean =
     casillerosPorJugadores.getOrElse(jugador,null).isEmpty
-  }
 
-  def jugadoresEstanSinReliquias():Boolean ={
+
+  def jugadoresEstanSinReliquias():Boolean = {
     var estanSinReliquias: Boolean = true
     casillerosPorJugadores.keys.foreach(j=> estanSinReliquias = estanSinReliquias && jugadorEstaSinReliquias(j))
     estanSinReliquias
   }
-
-
 }

@@ -1,646 +1,329 @@
-import org.scalatest.{FunSpec, Matchers}
+//import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
 import scala.util.Random
 
-// crear funcion desplazarRandomN(Integer)
-// crear variable con lista de acciones
-//
 
+class JuegoTest extends  FunSpec with Matchers with BeforeAndAfter {
 
-class JuegoTest extends  FunSpec with Matchers{
+  var juego:Juego = _
+  var jugadorRojo:Jugador = _
+  var jugadorAmarillo:Jugador = _
+  var jugadores: List[Jugador] = _
 
   describe("Juego") {
 
-    /*
-      Orden de los numeros aleatorios:
-            0 - 3 - 2 - 1 - 2 - 1 - 3 - 3 - 0 - 0 - 0 - 4
-    */
+    val acciones_ConsumirOxigenoBajoNadar: List[Accion] = List[Accion](ConsumirOxigeno(),Bajo(),Nadar())
+    val acciones_ConsumirOxigenoSuboNadar: List[Accion] = List[Accion](ConsumirOxigeno(),Subo(),Nadar())
+    val acciones_ConsumirOxigenoBajoNadarRecoger: List[Accion] = acciones_ConsumirOxigenoBajoNadar :+ RecongerReliquia()
+    val acciones_ConsumirOxigenoBajoNadarAbandonar: List[Accion] = acciones_ConsumirOxigenoBajoNadar :+ AbandonarReliquia()
+    val acciones_ConsumirOxigenoSuboNadarRecoger: List[Accion] = acciones_ConsumirOxigenoSuboNadar :+ RecongerReliquia()
+    val utils = new utils()
+
+    before {
+      Random.setSeed(1)
+      utils.desplazarRandomSeedN(1)
+      juego = new Juego()
+      jugadorRojo = Jugador(Rojo)
+      jugadorAmarillo = Jugador(Amarillo)
+      jugadores = List[Jugador](jugadorAmarillo,jugadorRojo)
+      juego.iniciar(jugadores)
+      juego.iniciarRonda()
+    }
 
 
     it("nivel de oxigeno no se modifica si no tiene reliquias") {
-      Random.setSeed(1)
-      var juego = new Juego()
-      var jugadorRojo = Jugador(Rojo)
-      var jugadorAmarillo = Jugador(Amarillo)
-      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
-
-      juego.iniciar(jugadores)
-      juego.iniciarRonda()
       juego.iniciarTurno(List[Accion](ConsumirOxigeno()))
-
       juego.nivelDeOxigeno shouldBe 25
-
     }
+
 
     it("un jugador que esta en el submarino declara que baja, tira los dados (4) y queda en el casillero 3") {
-      Random.setSeed(1)
-      Random.nextInt(6)
-      var juego = new Juego()
-      var jugadorRojo = Jugador(Rojo)
-      var jugadorAmarillo = Jugador(Amarillo)
-      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
-
-      juego.iniciar(jugadores)
-      juego.iniciarRonda()
-      juego.jugadorActual() shouldBe jugadorAmarillo
-
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
-      juego.posicionJugador(jugadorAmarillo) shouldBe 3                   // Dado: 4
-
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
-      juego.posicionJugador(jugadorRojo) shouldBe 5                       // Dado: 5
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
+      juego.posicionJugador(jugadorAmarillo) shouldBe 3
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
+      juego.posicionJugador(jugadorRojo) shouldBe 5
     }
 
-     it("dos jugadores tiran dados y bajan salteandose los casilleros ocupados por otro jugador") {
-       Random.setSeed(1)
-       Random.nextInt(6)
-       var juego = new Juego()
-       var jugadorRojo = Jugador(Rojo)
-       var jugadorAmarillo = Jugador(Amarillo)
-       var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
 
-       juego.iniciar(jugadores)
-       juego.iniciarRonda()
+    it("dos jugadores tiran dados y bajan salteandose los casilleros ocupados por otro jugador") {
        juego.jugadorActual() shouldBe jugadorAmarillo
 
-       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+       juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
        juego.posicionJugador(jugadorAmarillo) shouldBe 3
-
-       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+       juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
        juego.posicionJugador(jugadorRojo) shouldBe 5
 
-       juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+       juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
        juego.posicionJugador(jugadorAmarillo) should not equal 3
        juego.posicionJugador(jugadorAmarillo) shouldBe  8
-
-     }
+    }
 
 
     it("un jugador que tiene un contrincante atras dice que sube y lo saltea") {
-
-      Random.setSeed(1)
-      Random.nextInt(6)
-      var juego = new Juego()
-      var jugadorRojo = Jugador(Rojo)
-      var jugadorAmarillo = Jugador(Amarillo)
-      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
-
-      juego.iniciar(jugadores)
-      juego.iniciarRonda()
       juego.jugadorActual() shouldBe jugadorAmarillo
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.posicionJugador(jugadorAmarillo) shouldBe 3
-
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.posicionJugador(jugadorRojo) shouldBe 5
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.posicionJugador(jugadorAmarillo) should not equal 3
       juego.posicionJugador(jugadorAmarillo) shouldBe  8
 
-
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoSuboNadar)
       juego.posicionJugador(jugadorRojo) shouldBe 1
 
-      Random.nextInt(6)
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      utils.desplazarRandomSeedN(1)
+      juego.iniciarTurno(acciones_ConsumirOxigenoSuboNadar)
       juego.posicionJugador(jugadorAmarillo) shouldBe 4
-
     }
 
 
     it("un jugador sube al submarino desde el tablero") {
-
-      Random.setSeed(1)
-      Random.nextInt(6)
-      var juego = new Juego()
-      var jugadorRojo = Jugador(Rojo)
-      var jugadorAmarillo = Jugador(Amarillo)
-      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
-
-      juego.iniciar(jugadores)
-      juego.iniciarRonda()
       juego.jugadorActual() shouldBe jugadorAmarillo
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.posicionJugador(jugadorAmarillo) shouldBe 3
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.posicionJugador(jugadorRojo) shouldBe 5
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.posicionJugador(jugadorAmarillo) should not equal 3
       juego.posicionJugador(jugadorAmarillo) shouldBe  8
 
-
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoSuboNadar)
       juego.posicionJugador(jugadorRojo) shouldBe 1
 
-      Random.nextInt(6)
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      utils.desplazarRandomSeedN(1)
+      juego.iniciarTurno(acciones_ConsumirOxigenoSuboNadar)
       juego.posicionJugador(jugadorAmarillo) shouldBe 4
 
-      Random.nextInt(6)
-      Random.nextInt(6)
-      Random.nextInt(6)
-      Random.nextInt(6)
-      Random.nextInt(6)
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      utils.desplazarRandomSeedN(5)
+      juego.iniciarTurno(acciones_ConsumirOxigenoSuboNadar)
       juego.posicionJugador(jugadorRojo) shouldBe -1
-
     }
 
 
     it("jugador termina la ronda por falta de oxigeno ") {
-
-      Random.setSeed(1)
-      Random.nextInt(6)
-      var juego = new Juego()
-      var jugadorRojo = Jugador(Rojo)
-      var jugadorAmarillo = Jugador(Amarillo)
-      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
-
-      juego.iniciar(jugadores)
-      juego.iniciarRonda()
       juego.jugadorActual() shouldBe jugadorAmarillo
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.posicionJugador(jugadorAmarillo) shouldBe 3
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.posicionJugador(jugadorRojo) shouldBe 5
 
       juego.vaciarOxigeno()
-
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.posicionJugador(jugadorAmarillo) shouldBe -1
-
       juego.numeroDeRonda shouldBe 2
-
       juego.posicionJugador(jugadorAmarillo) shouldBe -1
       juego.posicionJugador(jugadorRojo) shouldBe -1
 
-
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.posicionJugador(jugadorAmarillo) shouldBe 2
 
       juego.vaciarOxigeno()
-
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.posicionJugador(jugadorAmarillo) shouldBe -1
       juego.posicionJugador(jugadorRojo) shouldBe -1
-
       juego.numeroDeRonda shouldBe 3
-
     }
 
 
     it("jugador termina la ronda porque subieron todos los jugadores al submarino") {
-
-      Random.setSeed(1)
-      Random.nextInt(6)
-      var juego = new Juego()
-      var jugadorRojo = Jugador(Rojo)
-      var jugadorAmarillo = Jugador(Amarillo)
-      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
-
-      juego.iniciar(jugadores)
-      juego.iniciarRonda()
       juego.jugadorActual() shouldBe jugadorAmarillo
 
-      Random.nextInt(6)
-      Random.nextInt(6)
-      Random.nextInt(6)
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      utils.desplazarRandomSeedN(3)
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.posicionJugador(jugadorAmarillo) shouldBe 2
 
-      Random.nextInt(6)
-      Random.nextInt(6)
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      utils.desplazarRandomSeedN(2)
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.posicionJugador(jugadorRojo) shouldBe 1
 
-      Random.nextInt(6)
-      Random.nextInt(6)
-      Random.nextInt(6)
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      utils.desplazarRandomSeedN(3)
+      juego.iniciarTurno(acciones_ConsumirOxigenoSuboNadar)
       juego.posicionJugador(jugadorAmarillo) shouldBe -1
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoSuboNadar)
       juego.posicionJugador(jugadorAmarillo) shouldBe -1
-
       juego.numeroDeRonda shouldBe 2
     }
-
 
 
     it("Al terminar la tercer ronda se termina el juego lanzando una exception") {
-      Random.setSeed(1)
-      Random.nextInt(6)
-      var juego = new Juego()
-      var jugadorRojo = Jugador(Rojo)
-      var jugadorAmarillo = Jugador(Amarillo)
-      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
-
-      juego.iniciar(jugadores)
-      juego.iniciarRonda()
       juego.jugadorActual() shouldBe jugadorAmarillo
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.posicionJugador(jugadorAmarillo) shouldBe 3
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.posicionJugador(jugadorRojo) shouldBe 5
 
       juego.vaciarOxigeno()
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.numeroDeRonda shouldBe 2
 
       juego.vaciarOxigeno()
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.numeroDeRonda shouldBe 3
-
       intercept[ExceptionFinDeJuego] { juego.vaciarOxigeno() }
-      //val thrown = the [ExceptionFinDeJuego] thrownBy juego.vaciarOxigeno()
-      //thrown.getMessage should equal ("El ganador es: "+juego.calcularJugadorGanador())
     }
 
 
-
-
     it("Al terminar el juego si ningun jugador recogio reliquias ") {
-      Random.setSeed(1)
-      Random.nextInt(6)
-      Random.nextInt(6)
-      var juego = new Juego()
-      var jugadorRojo = Jugador(Rojo)
-      var jugadorAmarillo = Jugador(Amarillo)
-      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
-
-      juego.iniciar(jugadores)
-      juego.iniciarRonda()
       juego.jugadorActual() shouldBe jugadorAmarillo
 
-      juego.obtenerReliquiaEnPosicion(4) shouldBe 1
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
+      utils.desplazarRandomSeedN(1)
+      juego.obtenerReliquiaEnPosicion(4) shouldBe 0
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadarRecoger)
 
       juego.posicionJugador(jugadorAmarillo) shouldBe 4
-      juego.totalReliquiasJugador(jugadorAmarillo) shouldBe 1
+      juego.totalReliquiasJugador(jugadorAmarillo) shouldBe 0
       juego.esCasilleroLibre(juego.posicionJugador(jugadorAmarillo)) shouldBe true
-
     }
 
 
     it("un jugador abandona una reliquia en un casillero libre") {
-      Random.setSeed(1)
-      Random.nextInt(6)
-      Random.nextInt(6)
-      var juego = new Juego()
-      var jugadorRojo = Jugador(Rojo)
-      var jugadorAmarillo = Jugador(Amarillo)
-      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
-
-      juego.iniciar(jugadores)
-      juego.iniciarRonda()
       juego.jugadorActual() shouldBe jugadorAmarillo
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
+      utils.desplazarRandomSeedN(1)
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadarRecoger)
       juego.posicionJugador(jugadorAmarillo) shouldBe 4
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
-
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.esCasilleroLibre(7) shouldBe false
       juego.ponerCasilleroLibreEnPosicion(7)
       juego.esCasilleroLibre(7) shouldBe true
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),AbandonarReliquia()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadarAbandonar)
       juego.posicionJugador(jugadorAmarillo) shouldBe 7
       juego.esCasilleroLibre(7) shouldBe false
     }
 
 
-
-
     it("un jugador abandona una reliquia en un casillero ocupado") {
-      Random.setSeed(1)
-      Random.nextInt(6)
-      Random.nextInt(6)
-      var juego = new Juego()
-      var jugadorRojo = Jugador(Rojo)
-      var jugadorAmarillo = Jugador(Amarillo)
-      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
-
-      juego.iniciar(jugadores)
-      juego.iniciarRonda()
       juego.jugadorActual() shouldBe jugadorAmarillo
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
+      utils.desplazarRandomSeedN(1)
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadarRecoger)
       juego.posicionJugador(jugadorAmarillo) shouldBe 4
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
-
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.esCasilleroLibre(6) shouldBe false
-      intercept[ExceptionCasilleroOcupado] {
-        juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),AbandonarReliquia()))
-      }
-
+      intercept[ExceptionCasilleroOcupado] {juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadarAbandonar)}
     }
 
 
-
     it("un jugador sin reliquias abandona una en un casillero libre") {
-      Random.setSeed(1)
-      Random.nextInt(6)
-      Random.nextInt(6)
-      var juego = new Juego()
-      var jugadorRojo = Jugador(Rojo)
-      var jugadorAmarillo = Jugador(Amarillo)
-      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
 
-      juego.iniciar(jugadores)
-      juego.iniciarRonda()
       juego.jugadorActual() shouldBe jugadorAmarillo
 
+      utils.desplazarRandomSeedN(1)
       juego.esCasilleroLibre(4) shouldBe false
       juego.ponerCasilleroLibreEnPosicion(4)
       juego.esCasilleroLibre(4) shouldBe true
 
       intercept[ExceptionJugadorSinReliquias] {
-        juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),AbandonarReliquia()))
+        juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadarAbandonar)
       }
-
       juego.posicionJugador(jugadorAmarillo) shouldBe 4
     }
 
 
     it("al iniciar nueva ronda los jugadores estan sin reliquias") {
-      Random.setSeed(1)
-      Random.nextInt(6)
-      Random.nextInt(6)
-      var juego = new Juego()
-      var jugadorRojo = Jugador(Rojo)
-      var jugadorAmarillo = Jugador(Amarillo)
-      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
-
-      juego.iniciar(jugadores)
-      juego.iniciarRonda()
       juego.jugadorActual() shouldBe jugadorAmarillo
-
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadarRecoger)
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.vaciarOxigeno()
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.numeroDeRonda shouldBe 2
       juego.jugadoresEstanSinReliquias() shouldBe true
-
     }
 
 
     it("al iniciar nueva ronda se eliminan del tablero los casilleros libres ") {
-      Random.setSeed(1)
-      Random.nextInt(6)
-      Random.nextInt(6)
-      var juego = new Juego()
-      var jugadorRojo = Jugador(Rojo)
-      var jugadorAmarillo = Jugador(Amarillo)
-      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
-
-      juego.iniciar(jugadores)
-      juego.iniciarRonda()
       juego.jugadorActual() shouldBe jugadorAmarillo
 
       var tamanioTableroRonda1:Integer = juego.tamanioTablero()
-
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
-      Random.nextInt(6)
-      Random.nextInt(6)
-
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar(),RecongerReliquia()))
-      Random.nextInt(6)
-      Random.nextInt(6)
-      Random.nextInt(6)
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar(),RecongerReliquia()))
-
+      utils.desplazarRandomSeedN(1)
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadarRecoger)
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadarRecoger)
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadarRecoger)
+      
+      utils.desplazarRandomSeedN(2)
+      juego.iniciarTurno(acciones_ConsumirOxigenoSuboNadarRecoger)
+      
+      utils.desplazarRandomSeedN(3)
+      juego.iniciarTurno(acciones_ConsumirOxigenoSuboNadarRecoger)
       juego.vaciarOxigeno()
-
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.numeroDeRonda shouldBe 2
-      var tamanioTableroRonda2:Integer = juego.tamanioTablero()
 
+      var tamanioTableroRonda2:Integer = juego.tamanioTablero()
       tamanioTableroRonda2 shouldBe tamanioTableroRonda1 - 5
     }
 
 
     it("gana el jugardor con mas dinero en reliquias acumulado") {
-      Random.setSeed(1)
-      Random.nextInt(6)
-      var juego = new Juego()
-      var jugadorRojo = Jugador(Rojo)
-      var jugadorAmarillo = Jugador(Amarillo)
-      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
 
-      juego.iniciar(jugadores)
-      juego.iniciarRonda()
       juego.jugadorActual() shouldBe jugadorAmarillo
-
-      Random.nextInt(6)
-      Random.nextInt(6)
-      Random.nextInt(6)
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
+      utils.desplazarRandomSeedN(3)
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadarRecoger)
       juego.nivelDeOxigeno() shouldBe 25
       juego.posicionJugador(jugadorAmarillo) shouldBe 2
 
-
-      Random.nextInt(6)
-      Random.nextInt(6)
-      Random.nextInt(6)
-      Random.nextInt(6)
-      //juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar(),RecongerReliquia()))
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      utils.desplazarRandomSeedN(4)
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.nivelDeOxigeno() shouldBe 25
       juego.posicionJugador(jugadorRojo) shouldBe 1
 
-      Random.nextInt(6)
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      utils.desplazarRandomSeedN(1)
+      juego.iniciarTurno(acciones_ConsumirOxigenoSuboNadar)
       juego.nivelDeOxigeno() shouldBe 24
       juego.posicionJugador(jugadorAmarillo) shouldBe -1
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.nivelDeOxigeno() shouldBe 24
       juego.posicionJugador(jugadorRojo) shouldBe 5
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoSuboNadar)
       juego.nivelDeOxigeno() shouldBe 23
       juego.posicionJugador(jugadorAmarillo) shouldBe -1
-
-      Random.nextInt(6)
-      Random.nextInt(6)
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      
+      utils.desplazarRandomSeedN(2)
+      juego.iniciarTurno(acciones_ConsumirOxigenoSuboNadar)
       juego.nivelDeOxigeno() shouldBe 23
       juego.posicionJugador(jugadorRojo) shouldBe 0
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoSuboNadar)
       juego.nivelDeOxigeno() shouldBe 22
       juego.posicionJugador(jugadorAmarillo) shouldBe -1
 
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoSuboNadar)
       juego.nivelDeOxigeno() shouldBe 25
       juego.posicionJugador(jugadorRojo) shouldBe -1
-
-      //juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
       juego.numeroDeRonda shouldBe 2
 
       juego.vaciarOxigeno()
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Subo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoSuboNadar)
       juego.numeroDeRonda shouldBe 3
 
       val execpt = the [ExceptionFinDeJuego] thrownBy juego.vaciarOxigeno()
       execpt.getMessage should equal ("El ganador es: "+juego.calcularJugadorGanador())
       print(execpt.getMessage)
-
-
     }
-
-
-
-
-
 
     it("Test lanzar dado controlable") {
-      var juego = new Juego()
-      var jugadorRojo = Jugador(Rojo)
-      var jugadorAmarillo = Jugador(Amarillo)
-      var jugadores: List[Jugador] = List[Jugador](jugadorAmarillo,jugadorRojo)
-
-      juego.iniciar(jugadores)
-      juego.iniciarRonda()
       juego.jugadorActual() shouldBe jugadorAmarillo
-
       Randoms.lanzarControlable(5)
-      juego.iniciarTurno(List[Accion](ConsumirOxigeno(),Bajo(),Nadar()))
+      juego.iniciarTurno(acciones_ConsumirOxigenoBajoNadar)
       juego.posicionJugador(jugadorAmarillo) shouldBe 4
       juego.posicionJugador(jugadorRojo) shouldBe -1
-
     }
-
-    /*
-    it("") {
-
-    }
-    *//*
-    it("") {
-
-    }
-    */
-    /*
-    it("") {
-
-    }
-    *//*
-    it("") {
-
-    }
-    */
-    /*
-    it("") {
-
-    }
-    *//*
-    it("") {
-
-    }
-    */
-    /*
-    it("") {
-
-    }
-    *//*
-    it("") {
-
-    }
-    */
-    /*
-    it("") {
-
-    }
-    *//*
-    it("") {
-
-    }
-    */
-    /*
-    it("") {
-
-    }
-    *//*
-    it("") {
-
-    }
-    */
-    /*
-    it("") {
-
-    }
-    *//*
-    it("") {
-
-    }
-    */
-    /*
-    it("") {
-
-    }
-    *//*
-    it("") {
-
-    }
-    */
-    /*
-    it("") {
-
-    }
-    *//*
-    it("") {
-
-    }
-    */
-    /*
-    it("") {
-
-    }
-    *//*
-    it("") {
-
-    }
-    */
-    /*
-    it("") {
-
-    }
-    *//*
-    it("") {
-
-    }
-    */
-    /*
-    it("") {
-
-    }
-    *//*
-    it("") {
-
-    }
-    */
-    /*
-    it("") {
-
-    }
-    */
-
-
-
   }
-
 }
